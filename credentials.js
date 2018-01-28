@@ -57,6 +57,7 @@ function initApp() {
   // [END authstatelistener]
 
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
+  document.getElementById('toggle-developer').addEventListener('click', devInfo, false);
 }
 
 /**
@@ -86,7 +87,7 @@ function startAuth(interactive) {
   });
 
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
-
+  document.getElementById('toggle-developer').addEventListener('click', devInfo, false);
   // // Request an OAuth token from the Chrome Identity API.
   // chrome.identity.getAuthToken({interactive: !!interactive}, function(token) {
   //   if (chrome.runtime.lastError && !interactive) {
@@ -115,12 +116,21 @@ function startAuth(interactive) {
 * Starts the sign-in process.
 */
 function startSignIn() {
-  document.getElementById('quickstart-button').disabled = true;
+  // document.getElementById('quickstart-button').disabled = true;
   if (firebase.auth().currentUser) {
     firebase.auth().signOut();
   } else {
     startAuth(true);
   }
+}
+
+function devInfo() {
+    var x = document.getElementById("developer-div");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
 }
 
 window.onload = function() {

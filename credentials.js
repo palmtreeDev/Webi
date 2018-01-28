@@ -9,6 +9,7 @@ var config = {
 };
 firebase.initializeApp(config);
 
+var providerData;
 /**
 * initApp handles setting up the Firebase context and registering
 * callbacks for the auth status.
@@ -27,8 +28,8 @@ firebase.initializeApp(config);
 var provider = new firebase.auth.FacebookAuthProvider();
 
 function initApp() {
+  //LOGIN
   // Listen for auth state changes.
-  // [START authstatelistener]
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
@@ -38,7 +39,7 @@ function initApp() {
       var photoURL = user.photoURL;
       var isAnonymous = user.isAnonymous;
       var uid = user.uid;
-      var providerData = user.providerData;
+      providerData = user.providerData;
       // [START_EXCLUDE]
       document.getElementById('quickstart-button').textContent = 'Sign out';
       document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
@@ -55,9 +56,37 @@ function initApp() {
     document.getElementById('quickstart-button').disabled = false;
   });
   // [END authstatelistener]
-
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
   document.getElementById('toggle-developer').addEventListener('click', devInfo, false);
+
+  //POSTING COMMENTS
+  document.getElementById('myButton').addEventListener('click', postComment, false);
+
+}
+function postComment(){
+  var ref;
+  var url = "";
+  var d = new Date();
+  var texts = document.getElementById('myTextArea').value;
+  var data = {
+    name: providerData[0].displayName,
+    profile_url: providerData[0].photoURL,
+    text: texts,
+    time: d.getTime(),
+    user_id: providerData[0].uid
+  }
+  chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+    var str = (tabs[0].url);
+    var realStr = str.replace("https://", "");
+    realStr = realStr.replace(/\./g, "_");
+    realStr = realStr.replace(/\//g, "`");
+    url = new String('urls/' + realStr);
+    if(url[url.length - 1] == '`') {
+        url = url.slice(0,-1);
+    }
+    ref = firebase.database().ref(url);
+    ref.push(data);
+  });
 }
 
 /**
@@ -75,6 +104,13 @@ function startAuth(interactive) {
     var user = result.user;
     console.log("facebook login success");
 
+    /*add user to the users tree*/
+    firebase.database().ref('users/' + user.uid).set({
+      name: user.name,
+      profileUrl: user.photoUrl,
+      history: null
+    });
+
   }).catch(function(error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -87,29 +123,6 @@ function startAuth(interactive) {
   });
 
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
-  document.getElementById('toggle-developer').addEventListener('click', devInfo, false);
-  // // Request an OAuth token from the Chrome Identity API.
-  // chrome.identity.getAuthToken({interactive: !!interactive}, function(token) {
-  //   if (chrome.runtime.lastError && !interactive) {
-  //     console.log('It was not possible to get a token programmatically.');
-  //   } else if(chrome.runtime.lastError) {
-  //     console.error(chrome.runtime.lastError);
-  //   } else if (token) {
-  //     // Authorize Firebase with the OAuth Access Token.
-  //     var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-  //     firebase.auth().signInWithCredential(credential).catch(function(error) {
-  //       // The OAuth token might have been invalidated. Lets' remove it from cache.
-  //       if (error.code === 'auth/invalid-credential') {
-  //         chrome.identity.removeCachedAuthToken({token: token}, function() {
-  //           startAuth(interactive);
-  //         });
-  //       }
-  //     });
-  //   } else {
-  //     console.error('The OAuth Token was null');
-  //   }
-  // });
-
 }
 
 /**
@@ -125,12 +138,12 @@ function startSignIn() {
 }
 
 function devInfo() {
-    var x = document.getElementById("developer-div");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
+  var x = document.getElementById("developer-div");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
 }
 
 window.onload = function() {

@@ -10,20 +10,7 @@ var config = {
 firebase.initializeApp(config);
 
 var providerData;
-/**
-* initApp handles setting up the Firebase context and registering
-* callbacks for the auth status.
-*
-* The core initialization is in firebase.App - this is the glue class
-* which stores configuration. We provide an app name here to allow
-* distinguishing multiple app instances.
-*
-* This method also registers a listener with firebase.auth().onAuthStateChanged.
-* This listener is called when the user is signed in or out, and that
-* is where we update the UI.
-*
-* When signed in, we also authenticate to the Firebase Realtime Database.
-*/
+var currentUser;
 
 var provider = new firebase.auth.FacebookAuthProvider();
 
@@ -32,6 +19,7 @@ function initApp() {
   // Listen for auth state changes.
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
+      currentUser = user;
       // User is signed in.
       var displayName = user.displayName;
       var email = user.email;
@@ -82,7 +70,7 @@ function postComment(){
     realStr = realStr.replace(/\//g, "`");
     url = new String('urls/' + realStr);
     if(url[url.length - 1] == '`') {
-        url = url.slice(0,-1);
+      url = url.slice(0,-1);
     }
     ref = firebase.database().ref(url);
     ref.push(data);
@@ -104,12 +92,11 @@ function startAuth(interactive) {
     var user = result.user;
     console.log("facebook login success");
 
-    /*add user to the users tree*/
-    firebase.database().ref('users/' + user.uid).set({
-      name: user.name,
-      profileUrl: user.photoUrl,
-      history: null
-    });
+    /*add user to the users tree if they don't already exist*/
+    var database = firebase.database();
+    var ref = database.ref('users');
+    console.log("ref: " + ref);
+    ref.on('value', insertUser);
 
   }).catch(function(error) {
     // Handle Errors here.
@@ -123,6 +110,74 @@ function startAuth(interactive) {
   });
 
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
+}
+
+function insertUser(data) {
+  console.log("gotData called");
+  var entry = data.val();
+  var keys = Object.keys(entry);
+  console.log("keys: " + keys);
+
+  var found = false;
+  var i = 0;
+  while ((i < keys.length) && (!found)) {
+    var db_uid = keys[i];
+    found = (db_uid == providerData[0].uid);
+    console.log("db_uid: " + db_uid);
+    console.log("currentUser: " + providerData[0].uid);
+    i++;
+  }
+  console.log("found: " + found.toString());
+
+  if (!found) {
+    var data = {
+      name: providerData[0].displayName,
+      profile_url: providerData[0].photoURL,
+      history: null
+    }
+    console.log("name: " + providerData[0].displayName);
+    console.log("photoUrl: " + providerData[0].photoURL);
+
+    var database = firebase.database();
+    var ref = firebase.database().ref("users/" + providerData[0].uid);
+    ref.set(data);
+  }
+}
+
+function displayComment(){
+  chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+    var str = (tabs[0].url);
+    var realStr = str.replace("https://", "");
+    realStr = realStr.replace(/\./g, "_");
+    realStr = realStr.replace(/\//g, "`");
+    url = new String('urls/' + realStr);
+    if(url[url.length - 1] == '`') {
+      url = url.slice(0,-1);
+    }
+    var ref = firebase.database().ref(url);
+    ref.on('value',gotData);
+  });
+}
+
+function gotData(data){
+  $('#commentDiv').empty();
+  var user = data.val();
+  var keys = Object.keys(user);
+  for(var i = 0; i < keys.length; i++){
+    var k = keys[i];
+    var comment = user[k].text;
+  $('#commentDiv')
+.append("<div class='comment'><img class='profile' src='" + user[k].profile_url + "'><div class='commentText'>" + comment + "</div></div>");
+
+  }
+
+  // for(var i = keys.length-1; i > 0; i--){
+  //   var k = keys[i];
+  //   var comment = user[k].text;
+  //   // console.log(comment);
+  //   $('#commentDiv')
+  // .append("<p class='comment'>" + comment + "</p>");
+  // }
 }
 
 /**
@@ -148,4 +203,5 @@ function devInfo() {
 
 window.onload = function() {
   initApp();
+  displayComment();
 };

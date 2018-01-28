@@ -65,7 +65,7 @@ function postComment(){
   if (!isEmpty(texts)) {
     var data = {
       name: providerData[0].displayName,
-      profile_url: providerData[0].photoURL,
+      profile: providerData[0].photoURL,
       text: texts,
       time: d.getTime(),
       user_id: providerData[0].uid
@@ -141,7 +141,7 @@ function insertUser(data) {
   if (!found) {
     var data = {
       name: providerData[0].displayName,
-      profile_url: providerData[0].photoURL,
+      profileUrl: providerData[0].photoURL,
       history: null
     }
     console.log("name: " + providerData[0].displayName);
@@ -176,7 +176,7 @@ function gotData(data){
     var k = keys[i];
     var comment = user[k].text;
     $('#commentDiv')
-    .append("<div class='comment'><img class='profile' src='" + user[k].profile_url + "'><div class='commentText'>" + comment + "</div></div>");
+    .append("<div class='comment'><img class='profile' src='" + user[k].profile + "'><div class='commentText'>" + comment + "</div></div>");
   }
   $('#commentRow').scrollTop($('#commentRow')[0].scrollHeight);
   // for(var i = keys.length-1; i > 0; i--){

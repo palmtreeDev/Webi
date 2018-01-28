@@ -32,6 +32,7 @@ function initApp() {
       document.getElementById('quickstart-button').textContent = 'Sign out';
       document.getElementById('quickstart-sign-in-status').textContent = 'Signed in';
       document.getElementById('quickstart-account-details').textContent = JSON.stringify(user, null, '  ');
+      document.getElementById('myButton').disabled = false;
       // [END_EXCLUDE]
     } else {
       // Let's try to get a Google auth token programmatically.
@@ -39,6 +40,7 @@ function initApp() {
       document.getElementById('quickstart-button').textContent = 'Sign-in with Facebook';
       document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
       document.getElementById('quickstart-account-details').textContent = 'null';
+      document.getElementById('myButton').disabled = true;
       // [END_EXCLUDE]
     }
     document.getElementById('quickstart-button').disabled = false;
@@ -115,7 +117,6 @@ function startAuth(interactive) {
     var email = error.email;
     // The firebase.auth.AuthCredential type that was used.
     var credential = error.credential;
-    // ...
   });
 
   document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
@@ -149,6 +150,8 @@ function insertUser(data) {
 
     var database = firebase.database();
     var ref = firebase.database().ref("users/" + providerData[0].uid);
+    // var ref = firebase.database().ref();
+    // var child = ref.child("users/" + providerData[0].uid);
     ref.set(data);
   }
 }
@@ -192,7 +195,6 @@ function gotData(data){
 * Starts the sign-in process.
 */
 function startSignIn() {
-  // document.getElementById('quickstart-button').disabled = true;
   if (firebase.auth().currentUser) {
     firebase.auth().signOut();
   } else {

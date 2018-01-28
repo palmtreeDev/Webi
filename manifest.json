@@ -7,7 +7,7 @@
     "128": "firebase.png"
   },
   "browser_action": {
-    "default_icon": "firebase.png",
+    "default_icon": "webi_logo_small.png",
     "default_popup": "credentials.html"
   },
   "background": {
@@ -15,5 +15,15 @@
   },
   "permissions": [
     "identity"
-  ]
+  ],
+  "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com; object-src 'self'",
+
+  "oauth2": {
+  "client_id": "105169090240-96js94sflulkdqpdcqnl5fmre1fj4o9a.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApYikHwO9pFITzl2irVpNAWaIB7M9EhUhc/2GPfbr4ssPlbPGLCyEsoIDo3u2A4EBOV5hxWq7JI5iiqu/51F11r1/Zi7wCKDF386HIrTwRCZNCBgkdEjz+ddo1NwhSJ0RtU2cJ05NefRU9zqIiME2RTtNrQaXP5UoYpp8hdnfN7hOlwo/tZS9JH+F2N9yJ5BLo5pSFxyfD+jt8fSPKVUwWW13XRZm48I9RKtai7LRDIlpWuWGw5vgER5BoBsXvZ3TC4MtPnJK2ilHxP7xPKzXl0pB12qTtdDaqUPd7efZBVJSZeNiAqlPPRQ7TrmB4+6KU9ONYtusx5bYWKbcc9qDwQIDAQAB"
 }

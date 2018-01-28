@@ -1,15 +1,15 @@
-// TODO(DEVELOPER): Change the values below using values from the initialization snippet: Firebase Console > Overview > Add Firebase to your web app.
 // Initialize Firebase
 var config = {
-    apiKey: "AIzaSyDpKNAAmDu7iwUFiVvLJmUm_DpaRVAhEFA",
-    authDomain: "webi-96ddb.firebaseapp.com",
-    databaseURL: "https://webi-96ddb.firebaseio.com",
-    projectId: "webi-96ddb",
-    storageBucket: "webi-96ddb.appspot.com",
-    messagingSenderId: "846826250516"
-  };
-  firebase.initializeApp(config);
+  apiKey: "AIzaSyDpKNAAmDu7iwUFiVvLJmUm_DpaRVAhEFA",
+  authDomain: "webi-96ddb.firebaseapp.com",
+  databaseURL: "https://webi-96ddb.firebaseio.com",
+  projectId: "webi-96ddb",
+  storageBucket: "webi-96ddb.appspot.com",
+  messagingSenderId: "846826250516"
+};
 
+
+firebase.initializeApp(config);
 
 /**
  * initApp handles setting up the Firebase context and registering

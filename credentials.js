@@ -75,6 +75,8 @@ function postComment(){
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
       var str = (tabs[0].url);
       var realStr = str.replace("https://", "");
+      realStr = realStr.replace("http://", "");
+      realStr = realStr.replace(/#/g, "*");
       realStr = realStr.replace(/\./g, "_");
       realStr = realStr.replace(/\//g, "`");
       url = new String('urls/' + realStr);
@@ -160,6 +162,8 @@ function displayComment(){
   chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
     var str = (tabs[0].url);
     var realStr = str.replace("https://", "");
+    realStr = realStr.replace("http://", "");
+    realStr = realStr.replace(/#/g, "*");
     realStr = realStr.replace(/\./g, "_");
     realStr = realStr.replace(/\//g, "`");
     url = new String('urls/' + realStr);

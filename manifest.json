@@ -4,7 +4,7 @@
   "description": "This sample shows how to authorize Firebase in a Chrome extension using a Google account.",
   "version": "2.1",
   "icons": {
-    "128": "firebase.png"
+    "128": "webi_logo.png"
   },
   "browser_action": {
     "default_icon": "webi_logo_small.png",

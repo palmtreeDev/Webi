@@ -51,30 +51,39 @@ function initApp() {
   document.getElementById('myButton').addEventListener('click', postComment, false);
 
 }
+
+function isEmpty(str) {
+  return (!str || 0 === str.length);
+}
+
 function postComment(){
   var ref;
   var url = "";
   var d = new Date();
   var texts = document.getElementById('myTextArea').value;
-  var data = {
-    name: providerData[0].displayName,
-    profile_url: providerData[0].photoURL,
-    text: texts,
-    time: d.getTime(),
-    user_id: providerData[0].uid
-  }
-  chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-    var str = (tabs[0].url);
-    var realStr = str.replace("https://", "");
-    realStr = realStr.replace(/\./g, "_");
-    realStr = realStr.replace(/\//g, "`");
-    url = new String('urls/' + realStr);
-    if(url[url.length - 1] == '`') {
-      url = url.slice(0,-1);
+
+  if (!isEmpty(texts)) {
+    var data = {
+      name: providerData[0].displayName,
+      profile_url: providerData[0].photoURL,
+      text: texts,
+      time: d.getTime(),
+      user_id: providerData[0].uid
     }
-    ref = firebase.database().ref(url);
-    ref.push(data);
-  });
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+      var str = (tabs[0].url);
+      var realStr = str.replace("https://", "");
+      realStr = realStr.replace(/\./g, "_");
+      realStr = realStr.replace(/\//g, "`");
+      url = new String('urls/' + realStr);
+      if(url[url.length - 1] == '`') {
+        url = url.slice(0,-1);
+      }
+      ref = firebase.database().ref(url);
+      ref.push(data);
+    });
+    $('#myTextArea').val('')
+  }
 }
 
 /**
@@ -166,11 +175,10 @@ function gotData(data){
   for(var i = 0; i < keys.length; i++){
     var k = keys[i];
     var comment = user[k].text;
-  $('#commentDiv')
-.append("<div class='comment'><img class='profile' src='" + user[k].profile_url + "'><div class='commentText'>" + comment + "</div></div>");
-
+    $('#commentDiv')
+    .append("<div class='comment'><img class='profile' src='" + user[k].profile_url + "'><div class='commentText'>" + comment + "</div></div>");
   }
-
+  $('#commentRow').scrollTop($('#commentRow')[0].scrollHeight);
   // for(var i = keys.length-1; i > 0; i--){
   //   var k = keys[i];
   //   var comment = user[k].text;

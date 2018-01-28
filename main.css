@@ -84,7 +84,10 @@ div.post {
 #developer-div {
   display:none;
 }
-
+#commentRow {
+  max-height:400px;
+  overflow:auto;
+}
 .commentText {
     padding: 10px;
     border: 1px solid #333;
